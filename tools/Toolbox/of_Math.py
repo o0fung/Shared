@@ -78,19 +78,23 @@ class Butterworth:
     FILTER_BUFFER_SIZE = 3
     
     def __init__(self):
+        # Setup buffer
         self.buffer_in = collections.deque(numpy.zeros(self.FILTER_BUFFER_SIZE), maxlen=self.FILTER_BUFFER_SIZE)
         self.buffer_out = collections.deque(numpy.zeros(self.FILTER_BUFFER_SIZE), maxlen=self.FILTER_BUFFER_SIZE)
+        # Setup coefficients
         self.a = numpy.zeros(self.FILTER_BUFFER_SIZE)
         self.b = numpy.zeros(self.FILTER_BUFFER_SIZE)
-        self.enable = True
+        
+        self.set_enable(True)
+        
+    def set_enable(self, val):
+        if type(val) is bool:
+            self.enable = val
 
-    def butter(self, cutoff, sampling):
-        if cutoff is None:
-            self.enable = False
-            return None, None
+    def butter(self, sample_freq, cutoff=None, mode='low'):
             
         # polynomial coefficient of 2nd order Butterworth filter
-        ita = 1.0 / numpy.tan(numpy.pi * cutoff / sampling)
+        ita = 1.0 / numpy.tan(numpy.pi * cutoff / sample_freq)
         q = numpy.sqrt(2.0)
         self.b[0] = 1.0 / (1.0 + q * ita + ita * ita)
         self.b[1] = self.b[0] * 2
@@ -98,13 +102,20 @@ class Butterworth:
         self.a[1] = 2.0 * (ita * ita - 1.0) * self.b[0]
         self.a[2] = -(1.0 - q * ita + ita * ita) * self.b[0]
         
+        if mode == 'high':
+            self.b[0] = self.b[0] * ita * ita
+            self.b[1] = self.b[1] * ita * ita * -1
+            self.b[2] = self.b[2] * ita * ita
+        
         return self.a, self.b
     
     def feed(self, data_in):
         if self.enable:
+            
             # register and shift data into buffer array
             self.buffer_in.appendleft(data_in)
             self.buffer_out.appendleft(0.0)
+            
             # compute filtered data using 2nd order Butterworth filter
             for i in range(3):
                 self.buffer_out[0] += self.b[i] * self.buffer_in[i]
@@ -113,5 +124,6 @@ class Butterworth:
             return self.buffer_out[0]
         
         else:
+            # Output raw input if filter is disabled
             return data_in
     
