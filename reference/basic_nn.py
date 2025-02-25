@@ -8,35 +8,7 @@ from matplotlib import pyplot
 import numpy
 
 
-TEST_SIZE = 0.3         # validation ratio
-N_SAMPLE = 2000         # no of sampling point
-N_FEATURE = 2           # no of input features
-N_LABEL = 2             # no of output class labels
 
-# build dataset from scikit learn toolbox
-# selected "make_moons" dataset has 2 features and 2 class labels
-X, y = datasets.make_moons(n_samples=N_SAMPLE, noise=0.2, random_state=100)
-# split dataset into train set and test set in ratio
-X_train, X_test, y_train, y_test = model_selection.train_test_split(X, y, test_size=TEST_SIZE, random_state=42)
-print(X.shape, y.shape)
-
-
-# show dataset distribution (X as 2D coordinate, y as label)
-def make_plot(X, y, plot_name, file_name=None, XX=None, YY=None, preds=None):
-    pyplot.figure(figsize=(16, 12))
-    
-    axes = pyplot.gca()
-    axes.set(xlabel='$x_1$', ylabel='$x_2$')
-    
-    pyplot.title(plot_name, fontsize=30)
-    pyplot.subplots_adjust(left=0.20)
-    pyplot.subplots_adjust(right=0.80)
-    
-    if XX is not None and YY is not None and preds is not None:
-        pyplot.contourf(XX, YY, preds.reshape(XX.shape), 25, alpha=1)
-        pyplot.contour(XX, YY, preds.reshape(XX.shape), levels=[.5], vmin=0, vmax=.6)
-    
-    pyplot.scatter(X[:, 0], X[:, 1], c=y.ravel(), s=40, edgecolors='none')
 
 
 class Layer:
@@ -176,7 +148,37 @@ class NeuralNetwork:
                 print(f'Epoch: #{i}, MSE: {float(mse)}')
                 
                 # print(f'Accuracy: {self.accuracy(self.predict(X_test), y_test.flatten()) * 100}')
-        
+    
+    
+# show dataset distribution (X as 2D coordinate, y as label)
+def make_plot(X, y, plot_name, file_name=None, XX=None, YY=None, preds=None):
+    pyplot.figure(figsize=(16, 12))
+    
+    axes = pyplot.gca()
+    axes.set(xlabel='$x_1$', ylabel='$x_2$')
+    
+    pyplot.title(plot_name, fontsize=30)
+    pyplot.subplots_adjust(left=0.20)
+    pyplot.subplots_adjust(right=0.80)
+    
+    if XX is not None and YY is not None and preds is not None:
+        pyplot.contourf(XX, YY, preds.reshape(XX.shape), 25, alpha=1)
+        pyplot.contour(XX, YY, preds.reshape(XX.shape), levels=[.5], vmin=0, vmax=.6)
+    
+    pyplot.scatter(X[:, 0], X[:, 1], c=y.ravel(), s=40, edgecolors='none')
+    
+    
+TEST_SIZE = 0.3         # validation ratio
+N_SAMPLE = 2000         # no of sampling point
+N_FEATURE = 2           # no of input features
+N_LABEL = 2             # no of output class labels
+
+# build dataset from scikit learn toolbox
+# selected "make_moons" dataset has 2 features and 2 class labels
+X, y = datasets.make_moons(n_samples=N_SAMPLE, noise=0.2, random_state=100)
+# split dataset into train set and test set in ratio
+X_train, X_test, y_train, y_test = model_selection.train_test_split(X, y, test_size=TEST_SIZE, random_state=42)
+print(X.shape, y.shape)
 
 # Construct a Neural Network (3-layers)
 nn = NeuralNetwork()
