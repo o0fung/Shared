@@ -1,4 +1,4 @@
-.vs
-.DS_Store
-.gitignore
-__pycache__
+**/.vs
+**/.DS_Store
+**/__pycache__
+**/.venv
